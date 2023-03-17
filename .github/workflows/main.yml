@@ -14,17 +14,22 @@ jobs:
 
       - name: Check Branch
         run: |
-            if [ "$GITHUB_HEAD_REF" == "main" ]; then
-              if [ "$GITHUB_BASE_REF" != "staging" ]; then
-                echo "Only staging branch can merge into main branch"
-                exit 1
-              fi
-            elif [ "$GITHUB_HEAD_REF" == "staging" ]; then
-              if [ "$GITHUB_BASE_REF" != "development" ]; then
-                echo "Only development branch can merge into staging branch"
-                exit 1
-              fi
-            elif [ "$GITHUB_HEAD_REF" != "main" ] && [ "$GITHUB_HEAD_REF" != "staging" ] && [ "$GITHUB_BASE_REF" != "development" ]; then
-              echo "Other than main and staging branch any branch can merge with development branch"
+          if [ "$GITHUB_BASE_REF" == "main" ]; then
+            if [ "$GITHUB_HEAD_REF" != "staging" ]; then
+              echo "Only staging branch can merge into main branch"
               exit 1
             fi
+          fi
+
+          if [ "$GITHUB_BASE_REF" == "staging" ]; then
+            if [ "$GITHUB_HEAD_REF" != "development" ]; then
+              echo "Only development branch can merge into staging branch"
+              exit 1
+            fi
+          fi
+
+          if [ "$GITHUB_HEAD_REF" == "main" ] || [ "$GITHUB_HEAD_REF" == "staging" ] && [ "$GITHUB_BASE_REF" == "development" ]; then
+            echo "Other than main and staging branch any branch can merge with development branch"
+            exit 1
+          fi
+
